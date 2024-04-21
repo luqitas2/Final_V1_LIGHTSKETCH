@@ -24,6 +24,12 @@ int totalSteps = 6;
 unsigned long lastStepTime2 = 0;
 int stepLength2 = 1000;
 
+unsigned long lastWaitTime = 0;
+int waitTime = 25;
+int currentWaitStep = 0;
+int totalWaitSteps = 6;
+
+
 void setup() {
 
   randomSeed(digitalRead(0));
@@ -50,7 +56,7 @@ void verseSatellite() {
   strip.clear();
   if (millis() > lastStepTime + stepLength) {
     lastStepTime = millis();
-    strip.fill(orange);
+    stripPulseOrange_Millis(25);
     nextStep();
   }
   if(millis() > lastStepTime2 + stepLength2){
@@ -177,5 +183,12 @@ void nextStep() {
   currentStep = currentStep + 1;
   if (currentStep >= totalSteps) {
     currentStep = 0;
+  }
+}
+
+void nextWaitTime(){
+  currentWaitStep = currentWaitStep + 1;
+  if(currentWaitStep >= totalWaitSteps){
+    currentWaitStep = 0;
   }
 }
