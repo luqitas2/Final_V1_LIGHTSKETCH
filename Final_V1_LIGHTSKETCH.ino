@@ -1,15 +1,20 @@
 #include <Adafruit_NeoPixel.h>
 
 #define LED_PIN 32
-#define LED_COUNT 16
+#define LED_COUNT 64
 
-Adafruit_NeoPixel strip(16, 32, NEO_GRB);  //panel 1
+Adafruit_NeoPixel strip(64, 32, NEO_GRB);  //panels 1 & 2
 
 uint32_t lightBlue = strip.Color(60, 127, 255);
 uint32_t softYellow = strip.Color(255, 164, 0);
 uint32_t orange = strip.Color(255, 100, 0);
 uint32_t white = strip.Color(127, 127, 127);
 uint32_t blue = strip.Color(64, 32, 255);
+
+// int[30][3] = {
+//   [255, 0, 0],
+//   [255, 255, 0],  
+// }
 
 long randNumber;
 long randNumber1;
@@ -43,12 +48,22 @@ void setup() {
 void loop() {
   strip.clear();
   verseSatellite();
+  // stripTest();
   strip.show();
 
   randNumber = random(56);
   randNumber1 = random(56);
   randNumber2 = random(56);
   randNumber3 = random(56);
+}
+
+void stripTest(){
+  for(int i = 0; i < 64; i++){
+    strip.clear();
+    strip.setPixelColor(i, 255, 255, 0);
+    strip.show();
+    delay(25);
+  }
 }
 
 
@@ -87,6 +102,14 @@ void stripPulseWhite(int wait) {
     strip.setPixelColor(1, i, i, i);
     strip.setPixelColor(2, i, i, i);
     strip.setPixelColor(3, i, i, i);
+        strip.setPixelColor(4, i, i, i);
+    strip.setPixelColor(5, i, i, i);
+    strip.setPixelColor(6, i, i, i);
+    strip.setPixelColor(7, i, i, i);
+        strip.setPixelColor(8, i, i, i);
+    strip.setPixelColor(9, i, i, i);
+    strip.setPixelColor(10, i, i, i);
+    strip.setPixelColor(11, i, i, i);
     delay(wait);
     strip.show();
     if (i == 2) {
