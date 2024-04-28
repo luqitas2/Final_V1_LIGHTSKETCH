@@ -5,11 +5,11 @@
 
 Adafruit_NeoPixel strip(64, 32, NEO_GRB);  //panels 1 & 2
 
-// uint32_t lightBlue = strip.Color(60, 127, 255);
-// uint32_t softYellow = strip.Color(255, 164, 0);
-// uint32_t orange = strip.Color(255, 100, 0);
-// uint32_t white = strip.Color(127, 127, 127);
-// uint32_t blue = strip.Color(64, 32, 255);
+uint32_t lightBlue = strip.Color(60, 127, 255);
+uint32_t softYellow = strip.Color(255, 164, 0);
+uint32_t orange = strip.Color(255, 100, 0);
+uint32_t white = strip.Color(127, 127, 127);
+uint32_t blue = strip.Color(64, 32, 255);
 
 // int[30][3] = {
 //   [255, 0, 0],
@@ -24,8 +24,13 @@ int totalSteps = 6;
 unsigned long lastFadeTime = 0;
 int fadeRate = 0;  //in milliseconds
 int fadeRate2 = 0;
+int riseRate = 0;
 int currentFadeStep = 0;
 int totalFadeSteps = 100;
+
+unsigned long lastRiseTime = 0;
+int currentRiseStep = 0;
+int totalRiseSteps = 100;
 
 unsigned long lastSparkleTime = 0;
 int currentSparkleStep = 0;
@@ -35,9 +40,10 @@ unsigned long lastSparkleTime2 = 0;
 int currentSparkleStep2 = 0;
 int totalSparkleStep2 = 100;
 
-int f = 100;   //fade variable
-int sf = 100;  //sparkle fade variable
-int sf1 = 100; //second sparkle fade variable
+int f = 100;    //fade variable
+int r = 0;     //rise variable
+int sf = 100;   //sparkle fade variable
+int sf1 = 100;  //second sparkle fade variable
 // int i = 0;
 
 bool orange = false;
@@ -123,7 +129,6 @@ int randNumberArray[33][1] = {
 void setup() {
   Serial.begin(9600);
   randomSeed(digitalRead(0));
-
   strip.begin();
   strip.clear();
   strip.setBrightness(100);  //eventually this will be variable with slider/expression pedal
@@ -131,7 +136,7 @@ void setup() {
 }
 
 void loop() {
-  verseSatellite();  //still makes both orange
+  verseSatellite();
 }
 
 
@@ -156,40 +161,25 @@ void bridge2Satellite() {
 }
 
 
-void colorRecall(int color) {  //not working properly
-  if (orange == color) {
+void colorRecall(int color) {
+  // color = true;
+  if (color == 1) {
     RED = 2.55;
     GREEN = 1.00;
     BLUE = 0;
   }
-  if (lightBlue == color) {
+  if (color == 2) {
     RED = 0.6;
     GREEN = 1.27;
     BLUE = 2.55;
   }
-  if (white == color) {
+  if (color == 3) {
     RED = 1.27;
     GREEN = 1.27;
     BLUE = 1.27;
-  } else {
-    RED = 0;
-    GREEN = 0;
-    BLUE = 0;
   }
-  Serial.println(orange);
 }
 
-void colorRecall2(int color2) {  //tried this as a solution, but still not changing anything
-  if (color2 == orange) {
-    RED = 2.55;
-    GREEN = 1.00;
-    BLUE = 0;
-  } if (color2 == lightBlue) {
-    RED = 0.6;
-    GREEN = 1.27;
-    BLUE = 2.55;
-  }
-}
 
 void fadeMillis(int color, int fadeRate) {
   colorRecall(color);
@@ -206,6 +196,31 @@ void fadeMillis(int color, int fadeRate) {
   }
 }
 
+void riseMillis(int color, int riseRate, int panel) {
+  colorRecall(color);
+  if (panel == 0) {
+    integer = 0;
+    number = 65;
+  }
+  if (panel == 1) {
+    integer = 0;
+    number = 32;
+  }
+  if (panel == 2) {
+    integer = 32;
+    number = 65;
+  }
+  if (millis() > lastRiseTime + riseRate) {
+    lastRiseTime = millis();
+    for (int i = integer; i < number; i++) {
+      strip.setPixelColor(i, (RED * r), (GREEN * r), (BLUE * r));
+    }
+    r = r + 1;
+    nextRise();
+    strip.show();
+  }
+}
+
 void sparkleOverFill(int color, int fadeRate) {
   colorRecall(color);
   if (millis() > lastSparkleTime + fadeRate) {
@@ -219,7 +234,13 @@ void sparkleOverFill(int color, int fadeRate) {
   }
 }
 
-
+void nextRise() {
+  currentRiseStep = currentRiseStep + 1;
+  if (currentRiseStep >= totalRiseSteps) {
+    currentRiseStep = 0;
+    r = 0;
+  }
+}
 
 void nextFade() {
   currentFadeStep = currentFadeStep + 1;
@@ -229,7 +250,6 @@ void nextFade() {
   }
 }
 
-
 void nextSparkle() {
   currentSparkleStep = currentSparkleStep + 1;
   if (currentSparkleStep >= totalSparkleStep) {
@@ -237,4 +257,3 @@ void nextSparkle() {
     currentSparkleStep = 0;
   }
 }
-
