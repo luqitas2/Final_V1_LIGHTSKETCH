@@ -13,7 +13,7 @@ uint32_t blue = strip.Color(64, 32, 255);
 
 // int[30][3] = {
 //   [255, 0, 0],
-//   [255, 255, 0],  
+//   [255, 255, 0],
 // }
 
 long randNumber;
@@ -26,13 +26,21 @@ int stepLength = 1000;
 int currentStep = 0;
 int totalSteps = 6;
 
-unsigned long lastStepTime2 = 0;
-int stepLength2 = 1000;
 
-unsigned long lastWaitTime = 0;
-int waitTime = 25;
-int currentWaitStep = 0;
-int totalWaitSteps = 6;
+unsigned long lastFadeTime = 0;
+int fadeRate = 0;  //in milliseconds
+int currentFadeStep = 0;
+int totalFadeSteps = 100;
+
+int f = 100;
+int i = 0;
+
+int orange = 0;
+int lightBlue = 0;
+
+float RED = 0;
+float BLUE = 0;
+float GREEN = 0;
 
 
 void setup() {
@@ -41,14 +49,13 @@ void setup() {
 
   strip.begin();
   strip.clear();
-  strip.setBrightness(80);  //eventually this will be variable with slider/expression pedal
+  strip.setBrightness(100);  //eventually this will be variable with slider/expression pedal
   strip.show();
 }
 
 void loop() {
   strip.clear();
-  verseSatellite();
-  // stripTest();
+
   strip.show();
 
   randNumber = random(56);
@@ -57,28 +64,8 @@ void loop() {
   randNumber3 = random(56);
 }
 
-void stripTest(){
-  for(int i = 0; i < 64; i++){
-    strip.clear();
-    strip.setPixelColor(i, 255, 255, 0);
-    strip.show();
-    delay(25);
-  }
-}
-
 
 void verseSatellite() {
-  strip.clear();
-  if (millis() > lastStepTime + stepLength) {
-    lastStepTime = millis();
-    stripPulseOrange_Millis(25);
-    nextStep();
-  }
-  if(millis() > lastStepTime2 + stepLength2){
-    lastStepTime2 = millis();
-    sparkleOverFill(25);
-    nextStep();
-  }
 }
 
 void verse2Satellite() {
@@ -96,75 +83,27 @@ void bridgeSatellite() {
 void bridge2Satellite() {
 }
 
-void stripPulseWhite(int wait) {
-  for (int i = 127; i > 1; i--) {
-    strip.setPixelColor(0, i, i, i);
-    strip.setPixelColor(1, i, i, i);
-    strip.setPixelColor(2, i, i, i);
-    strip.setPixelColor(3, i, i, i);
-        strip.setPixelColor(4, i, i, i);
-    strip.setPixelColor(5, i, i, i);
-    strip.setPixelColor(6, i, i, i);
-    strip.setPixelColor(7, i, i, i);
-        strip.setPixelColor(8, i, i, i);
-    strip.setPixelColor(9, i, i, i);
-    strip.setPixelColor(10, i, i, i);
-    strip.setPixelColor(11, i, i, i);
-    delay(wait);
-    strip.show();
-    if (i == 2) {
-      for (int j = 1; j < 127; j++) {
-        strip.setPixelColor(0, j, j, j);
-        strip.setPixelColor(1, j, j, j);
-        strip.setPixelColor(2, j, j, j);
-        strip.setPixelColor(3, j, j, j);
-        delay(wait);
-        strip.show();
-      }
-    }
+
+void colorRecall(int color) {
+  if (color == orange) {
+    RED = 2.55;
+    GREEN = 1.00;
+    BLUE = 0;
   }
 }
 
-
-void stripPulseOrange(int wait) {
-  for (int i = 100; i > 0; i--) {
-    strip.setPixelColor(0, (i * 2.55), i, 0);
-    strip.setPixelColor(1, (i * 2.55), i, 0);
-    strip.setPixelColor(2, (i * 2.55), i, 0);
-    strip.setPixelColor(3, (i * 2.55), i, 0);
-    delay(wait);
-    strip.show();
-    if (i == 1) {
-      for (int j = 1; j < 100; j++) {
-        strip.setPixelColor(0, (j * 2.55), j, 0);
-        strip.setPixelColor(1, (j * 2.55), j, 0);
-        strip.setPixelColor(2, (j * 2.55), j, 0);
-        strip.setPixelColor(3, (j * 2.55), j, 0);
-        delay(wait);
-        strip.show();
-      }
+void fadeMillis(int color, int fadeRate) {
+  colorRecall(color);
+  if (millis() > lastFadeTime + fadeRate) {
+    lastFadeTime = millis();
+    for (int i = 0; i < 65; i++) {
+      strip.setPixelColor(i, (RED * f), (GREEN * f), (BLUE * f));
+      Serial.println(RED);
     }
-  }
-}
-
-void stripPulseLightBlue(int wait) {
-  for (int i = 100; i > 0; i--) {
-    strip.setPixelColor(0, (i * 0.6), (i * 1.27), (i * 2.55));
-    strip.setPixelColor(1, (i * 0.6), (i * 1.27), (i * 2.55));
-    strip.setPixelColor(2, (i * 0.6), (i * 1.27), (i * 2.55));
-    strip.setPixelColor(3, (i * 0.6), (i * 1.27), (i * 2.55));
-    delay(wait);
+    f = f - 1;
     strip.show();
-    if (i == 1) {
-      for (int j = 1; j < 100; j++) {
-        strip.setPixelColor(0, (j * 0.6), (j * 1.27), (j * 2.55));
-        strip.setPixelColor(1, (j * 0.6), (j * 1.27), (j * 2.55));
-        strip.setPixelColor(2, (j * 0.6), (j * 1.27), (j * 2.55));
-        strip.setPixelColor(3, (j * 0.6), (j * 1.27), (j * 2.55));
-        delay(wait);
-        strip.show();
-      }
-    }
+    Serial.println(f);
+    nextFade();
   }
 }
 
@@ -180,38 +119,18 @@ void sparkleOverFill(int wait) {
 }
 
 
-
-void stripPulseOrange_Millis(int wait) {
-  for (int i = 100; i > 0; i--) {
-    strip.setPixelColor(0, (i * 2.55), i, 0);
-    strip.setPixelColor(1, (i * 2.55), i, 0);
-    strip.setPixelColor(2, (i * 2.55), i, 0);
-    strip.setPixelColor(3, (i * 2.55), i, 0);
-    delay(wait);  //would have to make this a variable step length based on the song tempo
-    strip.show();
-    if (i == 1) {
-      for (int j = 1; j < 100; j++) {
-        strip.setPixelColor(0, (j * 2.55), j, 0);
-        strip.setPixelColor(1, (j * 2.55), j, 0);
-        strip.setPixelColor(2, (j * 2.55), j, 0);
-        strip.setPixelColor(3, (j * 2.55), j, 0);
-        delay(wait);
-        strip.show();
-      }
-    }
+void nextFade() {
+  currentFadeStep = currentFadeStep + 1;
+  if (currentFadeStep >= totalFadeSteps) {
+    currentFadeStep = 0;
+    f = 100;
   }
 }
+
 
 void nextStep() {
   currentStep = currentStep + 1;
   if (currentStep >= totalSteps) {
     currentStep = 0;
-  }
-}
-
-void nextWaitTime(){
-  currentWaitStep = currentWaitStep + 1;
-  if(currentWaitStep >= totalWaitSteps){
-    currentWaitStep = 0;
   }
 }
