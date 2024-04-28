@@ -30,8 +30,8 @@ unsigned long lastSparkleTime = 0;
 int currentSparkleStep = 0;
 int totalSparkleStep = 100;
 
-int f = 100; //fade variable
-int sf = 100; //sparkle fade variable
+int f = 100;   //fade variable
+int sf = 100;  //sparkle fade variable
 // int i = 0;
 
 int orange = 0;
@@ -90,14 +90,14 @@ void setup() {
 }
 
 void loop() {
-  verseSatellite();
-  // strip.show();
+  verseSatellite(orange, lightBlue); //still makes both orange
 }
 
 
-void verseSatellite() {
-  fadeMillis(orange, 25);
-  sparkleOverFill(lightBlue, 10);
+void verseSatellite(int color, int color2) {
+  sparkleOverFill(color2, 10);
+  fadeMillis(color, 25);
+  // sparkleOverFill(color2, 10);
 }
 
 void verse2Satellite() {
@@ -116,12 +116,24 @@ void bridge2Satellite() {
 }
 
 
-void colorRecall(int color) {
+void colorRecall(int color) { //not working properly
   if (color == orange) {
     RED = 2.55;
     GREEN = 1.00;
     BLUE = 0;
-  }else if(color == lightBlue){
+  } else if (color == lightBlue) {
+    RED = 0.6;
+    GREEN = 1.27;
+    BLUE = 2.55;
+  }
+}
+
+void colorRecall2(int color2) { //tried this as a solution, but still not changing anything
+  if (color2 == orange) {
+    RED = 2.55;
+    GREEN = 1.00;
+    BLUE = 0;
+  } else if (color2 == lightBlue) {
     RED = 0.6;
     GREEN = 1.27;
     BLUE = 2.55;
@@ -137,14 +149,14 @@ void fadeMillis(int color, int fadeRate) {
       Serial.println(RED);
     }
     f = f - 1;
-    strip.show();
+    // strip.show();
     Serial.println(f);
     nextFade();
   }
 }
 
-void sparkleOverFill(int color, int fadeRate) {
-  colorRecall(color);
+void sparkleOverFill(int color2, int fadeRate) {
+  colorRecall2(color2);
   if (millis() > lastSparkleTime + fadeRate) {
     lastSparkleTime = millis();
     for (int i = 0; i < 17; i++) {
@@ -165,16 +177,10 @@ void nextFade() {
   }
 }
 
-// void nextStep() {
-//   currentStep = currentStep + 1;
-//   if (currentStep >= totalSteps) {
-//     currentStep = 0;
-//   }
-// }
 
-void nextSparkle(){
+void nextSparkle() {
   currentSparkleStep = currentSparkleStep + 1;
-  if(currentSparkleStep >= totalSparkleStep){
+  if (currentSparkleStep >= totalSparkleStep) {
     sf = 100;
     currentSparkleStep = 0;
   }
